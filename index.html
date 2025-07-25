@@ -7,11 +7,8 @@
   <title>Interactive Quiz Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
-  <script>
-    // Required for pdf.js to work correctly from esm.sh
-    window.pdfjsWorker = "https://esm.sh/pdfjs-dist@4.4.168/build/pdf.worker.mjs";
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Noto+Kufi+Arabic:wght@400;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script type="importmap">
     {
@@ -22,13 +19,24 @@
       }
     }
   </script>
-  <script type="module" crossorigin src="/interactive-quiz-generator/assets/index-hmYe7qSk.js"></script>
-  <link rel="stylesheet" crossorigin href="/interactive-quiz-generator/assets/index-B7d8nOU5.css">
+  <script type="module" crossorigin src="/interactive-quiz-generator/assets/index-D6i7fMZH.js"></script>
+  <link rel="stylesheet" crossorigin href="/interactive-quiz-generator/assets/index-Bzh_zyZq.css">
 </head>
 <body>
   <div class="main-container">
     <header class="app-header">
        <div class="app-header-actions">
+        <div id="auth-container">
+            <div id="google-signin-button-container"></div>
+            <div id="google-signin-config-error" style="display: none;">
+                <p id="google-signin-config-error-text"></p>
+            </div>
+            <div id="user-profile" style="display: none;">
+                <img id="user-avatar" src="" alt="User Avatar">
+                <span id="user-name"></span>
+                <button id="signout-btn" class="header-btn" data-i18n="signOut"></button>
+            </div>
+        </div>
         <button id="settings-btn" class="header-btn" aria-label="Settings">⚙️</button>
       </div>
       <div class="app-header-content">
@@ -37,37 +45,37 @@
       </div>
       <div class="app-header-actions">
         <button id="recall-hub-btn" class="header-btn" style="display: none;">🧠 <span id="recall-count-badge" class="badge"></span></button>
-        <button id="quiz-history-btn" class="header-btn"></button>
+        <button id="quiz-history-btn" class="header-btn" data-i18n="quizHistory"></button>
       </div>
     </header>
     
     <div class="prompt-container">
-      <textarea id="prompt-input" rows="3" placeholder="e.g., 'Create a quiz on the main topics...'"></textarea>
+      <textarea id="prompt-input" rows="3" data-i18n="subjectPlaceholder"></textarea>
       
       <div class="file-inputs-container">
         <div class="file-input-area">
           <input type="file" id="file-input" class="visually-hidden" accept=".txt,.md,.pdf,.docx">
-          <label for="file-input" class="button-like-label">Upload Document</label>
+          <label for="file-input" class="button-like-label" data-i18n="uploadDocLabel"></label>
           <div id="file-name-display" class="file-name-display" style="display: none;">
             <span id="file-name"></span>
             <button id="remove-file-btn" class="remove-file-btn">&times;</button>
           </div>
-          <small class="supported-formats">Supported: .txt, .md, .pdf, .docx</small>
+          <small class="supported-formats" data-i18n="supportedDocFormats"></small>
         </div>
         <div class="file-input-area">
             <input type="file" id="image-input" class="visually-hidden" accept="image/*">
-            <label for="image-input" class="button-like-label">Upload Image</label>
+            <label for="image-input" class="button-like-label" data-i18n="uploadImageLabel"></label>
             <div id="image-name-display" class="file-name-display" style="display: none;">
               <span id="image-name"></span>
               <button id="remove-image-btn" class="remove-file-btn">&times;</button>
             </div>
-            <small class="supported-formats">Supported: images (jpg, png, etc.)</small>
+            <small class="supported-formats" data-i18n="supportedImageFormats"></small>
         </div>
       </div>
       
        <div class="learning-options-container">
          <div class="input-group">
-            <label id="knowledge-level-label"></label>
+            <label id="knowledge-level-label" data-i18n="knowledgeLevel"></label>
             <div class="radio-button-group" id="knowledge-level-selector">
                 <label><input type="radio" name="knowledge-level" value="Beginner" checked> <span data-i18n="beginner"></span></label>
                 <label><input type="radio" name="knowledge-level" value="Intermediate"> <span data-i18n="intermediate"></span></label>
@@ -75,7 +83,7 @@
             </div>
         </div>
          <div class="input-group">
-            <label id="learning-goal-label"></label>
+            <label id="learning-goal-label" data-i18n="learningGoal"></label>
             <div class="radio-button-group" id="learning-goal-selector">
                 <label><input type="radio" name="learning-goal" value="Understand Concepts" checked> <span data-i18n="understandConcepts"></span></label>
                 <label><input type="radio" name="learning-goal" value="Apply Information"> <span data-i18n="applyInfo"></span></label>
@@ -86,52 +94,56 @@
 
       <div class="quiz-customization-container">
         <div class="input-group">
-            <label for="num-questions-input" id="num-questions-label"></label>
-            <input type="number" id="num-questions-input" min="1" max="20" value="5">
+            <label for="num-questions-input" data-i18n="numQuestions"></label>
+            <input type="number" id="num-questions-input" min="1" value="5">
         </div>
         <div class="input-group">
-            <label id="difficulty-label"></label>
+            <label data-i18n="difficulty"></label>
             <div class="difficulty-selector">
-                <button class="difficulty-btn active" data-difficulty="Mixed"></button>
-                <button class="difficulty-btn" data-difficulty="Easy"></button>
-                <button class="difficulty-btn" data-difficulty="Medium"></button>
-                <button class="difficulty-btn" data-difficulty="Hard"></button>
+                <button class="difficulty-btn active" data-difficulty="Mixed" data-i18n="mixed"></button>
+                <button class="difficulty-btn" data-difficulty="Easy" data-i18n="easy"></button>
+                <button class="difficulty-btn" data-difficulty="Medium" data-i18n="mediumDifficulty"></button>
+                <button class="difficulty-btn" data-difficulty="Hard" data-i18n="hard"></button>
             </div>
         </div>
-        <div class="input-group">
-          <label for="subject-input">Subject/Field (Optional)</label>
-          <input type="text" id="subject-input" placeholder="e.g., Medical Physics, WW2 History">
+        <div class="input-group full-width-group">
+          <label for="subject-input" data-i18n="subjectField"></label>
+          <input type="text" id="subject-input" data-i18n="subjectPlaceholder">
         </div>
-        <div class="input-group">
-            <label id="explanation-lang-label">Explanation Language</label>
-            <div class="difficulty-selector" id="explanation-lang-selector">
-                <button class="difficulty-btn active" data-lang="Arabic">Arabic</button>
-                <button class="difficulty-btn" data-lang="English">English</button>
-            </div>
+        <div class="input-group full-width-group">
+          <label data-i18n="questionTypes"></label>
+          <div id="question-types-selector" class="checkbox-grid">
+              <label><input type="checkbox" name="question-type" value="MCQ" checked> <span data-i18n="qMcq"></span></label>
+              <label><input type="checkbox" name="question-type" value="TrueFalse" checked> <span data-i18n="qTf"></span></label>
+              <label><input type="checkbox" name="question-type" value="ShortAnswer" checked> <span data-i18n="qSa"></span></label>
+              <label><input type="checkbox" name="question-type" value="Ordering" checked> <span data-i18n="qOrd"></span></label>
+              <label><input type="checkbox" name="question-type" value="Matching" checked> <span data-i18n="qMatch"></span></label>
+          </div>
         </div>
-         <div class="input-group">
-            <label id="quiz-lang-label"></label>
-            <div class="difficulty-selector" id="quiz-lang-selector">
+      </div>
+      
+      <div class="language-options-container">
+        <div class="input-group">
+            <label data-i18n="quizLanguage"></label>
+            <div class="button-group" id="quiz-lang-selector">
                 <button class="difficulty-btn" data-lang="Arabic">Arabic</button>
                 <button class="difficulty-btn active" data-lang="English">English</button>
             </div>
         </div>
-        <div class="input-group full-width-group">
-          <label id="question-types-label"></label>
-          <div id="question-types-selector" class="checkbox-grid">
-              <label><input type="checkbox" name="question-type" value="MCQ" checked> <span data-i18n="q-mcq"></span></label>
-              <label><input type="checkbox" name="question-type" value="TrueFalse" checked> <span data-i18n="q-tf"></span></label>
-              <label><input type="checkbox" name="question-type" value="ShortAnswer" checked> <span data-i18n="q-sa"></span></label>
-              <label><input type="checkbox" name="question-type" value="Ordering" checked> <span data-i18n="q-ord"></span></label>
-              <label><input type="checkbox" name="question-type" value="Matching" checked> <span data-i18n="q-match"></span></label>
-          </div>
+        <div class="input-group">
+            <label data-i18n="explanationLanguage"></label>
+            <div class="button-group" id="explanation-lang-selector">
+                <button class="difficulty-btn active" data-lang="Arabic">Arabic</button>
+                <button class="difficulty-btn" data-lang="English">English</button>
+            </div>
         </div>
       </div>
 
-      <button id="generate-btn">Generate Quiz</button>
+      <button id="generate-btn" data-i18n="generateQuiz"></button>
       <div id="loader-container" style="display: none;">
         <div id="loader" class="loader"></div>
-        <button id="cancel-btn" class="secondary-btn">Cancel</button>
+        <p id="generation-progress-text" class="progress-text"></p>
+        <button id="cancel-btn" class="secondary-btn" data-i18n="cancel"></button>
       </div>
       <p id="error-message" class="error-message" style="display: none;"></p>
     </div>
@@ -141,12 +153,12 @@
       <div id="landing-page" class="page">
         <h1 id="quiz-title"></h1>
         <div id="pre-quiz-summary-container" class="pre-quiz-summary" style="display: none;">
-            <h3 data-i18n="summary-header"></h3>
+            <h3 data-i18n="summaryHeader"></h3>
             <div id="summary-content"></div>
         </div>
         <hr>
-        <p id="landing-message"></p>
-        <button id="start-quiz-btn"></button>
+        <p id="landing-message" data-i18n="landingMessage"></p>
+        <button id="start-quiz-btn" data-i18n="startQuiz"></button>
       </div>
 
       <div id="quiz-page" class="page">
@@ -167,44 +179,44 @@
       </div>
 
       <div id="results-page" class="page">
-        <h2 id="results-header"></h2>
-        <p><span id="results-score-label"></span> <span id="score"></span> / <span id="total-questions"></span></p>
-        <p><span id="results-percentage-label"></span> <span id="percentage"></span>%</p>
+        <h2 data-i18n="resultsHeader"></h2>
+        <p><span data-i18n="resultsScoreLabel"></span> <span id="score"></span> / <span id="total-questions"></span></p>
+        <p><span data-i18n="resultsPercentageLabel"></span> <span id="percentage"></span>%</p>
         <p><strong>Time Taken:</strong> <span id="time-taken"></span></p>
         <p id="study-advice"></p>
         <div class="button-group">
-            <button id="review-answers-btn"></button>
-            <button id="retake-quiz-btn"></button>
-            <button id="export-anki-btn" class="secondary-btn"></button>
-            <button id="generate-different-quiz-btn" class="secondary-btn"></button>
-            <button id="new-quiz-btn"></button>
+            <button id="review-answers-btn" data-i18n="reviewAnswers"></button>
+            <button id="retake-quiz-btn" data-i18n="retakeQuiz"></button>
+            <button id="export-anki-btn" class="secondary-btn" data-i18n="exportForAnki"></button>
+            <button id="generate-different-quiz-btn" class="secondary-btn" data-i18n="generateDifferentQuiz"></button>
+            <button id="new-quiz-btn" data-i18n="createNewQuiz"></button>
         </div>
       </div>
 
       <div id="review-page" class="page">
-        <h2 id="review-header"></h2>
+        <h2 data-i18n="reviewHeader"></h2>
         <div id="review-container">
           <!-- Reviewed questions will be loaded here -->
         </div>
         <div class="button-group">
-            <button id="back-to-results-btn"></button>
-            <button id="generate-different-quiz-btn-from-review" class="secondary-btn"></button>
-            <button id="new-quiz-btn-from-review"></button>
+            <button id="back-to-results-btn" data-i18n="backToResults"></button>
+            <button id="generate-different-quiz-btn-from-review" class="secondary-btn" data-i18n="generateDifferentQuiz"></button>
+            <button id="new-quiz-btn-from-review" data-i18n="createNewQuiz"></button>
         </div>
       </div>
 
       <div id="history-page" class="page">
-        <h2 id="history-header"></h2>
+        <h2 data-i18n="historyHeader"></h2>
         <div id="history-container">
           <!-- History will be loaded here -->
         </div>
         <div class="button-group">
-          <button id="back-to-creator-btn"></button>
+          <button id="back-to-creator-btn" data-i18n="backToCreator"></button>
         </div>
       </div>
       
       <div id="spaced-repetition-page" class="page">
-        <h2 data-i18n="recall-header"></h2>
+        <h2 data-i18n="recallHeader"></h2>
         <div id="recall-session-container" style="display: none;">
             <div id="recall-progress"></div>
             <div class="flashcard">
@@ -212,19 +224,19 @@
                 <div id="recall-answer" style="display: none;"></div>
             </div>
             <div id="recall-nav-container" class="button-group">
-                <button id="recall-show-answer-btn"></button>
+                <button id="recall-show-answer-btn" data-i18n="showAnswer"></button>
                 <div id="recall-feedback-btns" style="display: none;" class="button-group">
-                    <button id="recall-forgot-btn" class="recall-feedback-btn recall-forgot"></button>
-                    <button id="recall-good-btn" class="recall-feedback-btn recall-good"></button>
-                    <button id="recall-easy-btn" class="recall-feedback-btn recall-easy"></button>
+                    <button id="recall-forgot-btn" class="recall-feedback-btn recall-forgot" data-i18n="recallForgot"></button>
+                    <button id="recall-good-btn" class="recall-feedback-btn recall-good" data-i18n="recallGood"></button>
+                    <button id="recall-easy-btn" class="recall-feedback-btn recall-easy" data-i18n="recallEasy"></button>
                 </div>
             </div>
         </div>
         <div id="recall-complete-message" style="display: none;" class="text-center">
-            <h3 data-i18n="recall-complete-header"></h3>
-            <p data-i18n="recall-complete-text"></p>
+            <h3 data-i18n="recallCompleteHeader"></h3>
+            <p data-i18n="recallCompleteText"></p>
             <div class="button-group">
-                <button id="recall-back-to-creator-btn"></button>
+                <button id="recall-back-to-creator-btn" data-i18n="createNewQuiz"></button>
             </div>
         </div>
       </div>
@@ -234,39 +246,142 @@
 
   <div id="resume-prompt-container" class="modal-container" style="display: none;">
       <div class="modal-content">
-          <h2 id="resume-header"></h2>
-          <p id="resume-text"></p>
+          <h2 data-i18n="resumeHeader"></h2>
+          <p data-i18n="resumeText"></p>
           <div class="button-group">
-              <button id="resume-yes-btn"></button>
-              <button id="resume-no-btn" class="secondary-btn"></button>
+              <button id="resume-yes-btn" data-i18n="resumeYes"></button>
+              <button id="resume-no-btn" class="secondary-btn" data-i18n="resumeNo"></button>
+          </div>
+      </div>
+  </div>
+  
+   <div id="migrate-history-prompt-container" class="modal-container" style="display: none;">
+      <div class="modal-content">
+          <h2 data-i18n="migrateHistoryHeader"></h2>
+          <p data-i18n="migrateHistoryText"></p>
+          <div class="button-group">
+              <button id="migrate-history-yes-btn" data-i18n="migrateHistoryYes"></button>
+              <button id="migrate-history-no-btn" class="secondary-btn" data-i18n="migrateHistoryNo"></button>
           </div>
       </div>
   </div>
   
   <div id="settings-modal" class="modal-container" style="display: none;">
     <div class="modal-content">
-        <h2 id="settings-header"></h2>
-        <div class="setting-option">
-            <label id="font-size-label"></label>
-            <div class="button-group" id="font-size-selector">
-                <button class="font-size-btn" data-size="small"></button>
-                <button class="font-size-btn active" data-size="medium"></button>
-                <button class="font-size-btn" data-size="large"></button>
+        <h2 data-i18n="settings"></h2>
+
+        <div class="setting-group">
+            <h3 data-i18n="appearanceHeader"></h3>
+            <div class="setting-option">
+                <label data-i18n="interfaceLanguage"></label>
+                <div class="button-group" id="interface-lang-selector">
+                    <button class="difficulty-btn" data-lang="ar">العربية</button>
+                    <button class="difficulty-btn" data-lang="en">English</button>
+                </div>
+            </div>
+             <div class="setting-option">
+                <label data-i18n="fontSize"></label>
+                <div class="button-group" id="font-size-selector">
+                    <button class="font-size-btn" data-size="small" data-i18n="small"></button>
+                    <button class="font-size-btn active" data-size="medium" data-i18n="medium"></button>
+                    <button class="font-size-btn" data-size="large" data-i18n="large"></button>
+                </div>
+            </div>
+            <div class="setting-option">
+                <label data-i18n="theme"></label>
+                <div class="button-group" id="theme-selector">
+                    <button class="theme-btn" data-theme="light" data-i18n="light"></button>
+                    <button class="theme-btn" data-theme="dark" data-i18n="dark"></button>
+                </div>
             </div>
         </div>
-        <button id="settings-close-btn" class="secondary-btn"></button>
+        
+        <details class="setting-group" open>
+            <summary>
+                <h3 data-i18n="apiKeyHeader"></h3>
+            </summary>
+            <div class="security-warning">
+                <strong data-i18n="securityWarningTitle"></strong>
+                <p data-i18n="securityWarningText"></p>
+            </div>
+            <div class="setting-option">
+                <label for="api-key-input" data-i18n="apiKeyLabel"></label>
+                <div class="api-key-input-wrapper">
+                    <input type="password" id="api-key-input" placeholder="Enter your API key here">
+                    <button id="save-api-key-btn" data-i18n="saveKeyBtn"></button>
+                    <button id="clear-api-key-btn" class="secondary-btn" data-i18n="clearKeyBtn" style="display: none;"></button>
+                </div>
+                <p id="api-key-status" class="api-key-status"></p>
+            </div>
+        </details>
+        
+        <details class="setting-group" open>
+            <summary>
+                <h3 data-i18n="advancedAiSettings"></h3>
+            </summary>
+            <div class="setting-option">
+                <label data-i18n-label="temperature" id="temperature-label">Temperature: <span id="temperature-value">0.5</span></label>
+                <p class="setting-description" data-i18n="temperatureDesc"></p>
+                <input type="range" id="temperature-slider" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            <div class="setting-option">
+                <label data-i18n-label="topK" id="top-k-label">Top-K: <span id="top-k-value">32</span></label>
+                <p class="setting-description" data-i18n="topKDesc"></p>
+                <input type="range" id="top-k-slider" min="1" max="100" step="1" value="32">
+            </div>
+             <div class="setting-option">
+                <label class="checkbox-label" for="generate-explanations-toggle">
+                    <input type="checkbox" id="generate-explanations-toggle" checked>
+                    <span data-i18n="generateExplanationsLabel"></span>
+                </label>
+                <p class="setting-description" data-i18n="generateExplanationsDesc"></p>
+            </div>
+        </details>
+
+        <details class="setting-group" open>
+            <summary>
+                <h3 data-i18n="systemSettingsHeader"></h3>
+            </summary>
+             <div class="setting-option">
+                <label for="large-quiz-threshold-input" data-i18n="largeQuizThresholdLabel"></label>
+                <p class="setting-description" data-i18n="largeQuizThresholdDesc"></p>
+                <input type="number" id="large-quiz-threshold-input" min="1" class="full-width-input">
+            </div>
+             <div class="setting-option">
+                <label for="questions-per-batch-input" data-i18n="questionsPerBatchLabel"></label>
+                <p class="setting-description" data-i18n="questionsPerBatchDesc"></p>
+                <input type="number" id="questions-per-batch-input" min="1" class="full-width-input">
+            </div>
+            <div class="setting-option">
+                <label for="chunk-size-input" data-i18n="chunkSizeLabel"></label>
+                <p class="setting-description" data-i18n="chunkSizeDesc"></p>
+                <input type="number" id="chunk-size-input" min="1000" class="full-width-input">
+            </div>
+             <div class="setting-option">
+                <label for="concurrent-batches-input" data-i18n="concurrentBatchesLabel"></label>
+                <p class="setting-description" data-i18n="concurrentBatchesDesc"></p>
+                <input type="number" id="concurrent-batches-input" min="1" max="10" class="full-width-input">
+            </div>
+             <div class="setting-option">
+                <label for="api-delay-input" data-i18n="apiDelayLabel"></label>
+                <p class="setting-description" data-i18n="apiDelayDesc"></p>
+                <input type="number" id="api-delay-input" min="0" step="500" class="full-width-input">
+            </div>
+        </details>
+
+        <button id="settings-close-btn" class="secondary-btn" data-i18n="close"></button>
     </div>
   </div>
 
   <div id="learn-more-modal" class="modal-container" style="display: none;">
     <div class="modal-content">
-        <h2 id="learn-more-header"></h2>
+        <h2 data-i18n="learnMoreHeader"></h2>
         <div id="learn-more-loader" class="loader" style="display: none;"></div>
         <div id="learn-more-error" class="error-message" style="display: none;"></div>
         <div id="learn-more-content">
             <!-- Content will be injected by JS -->
         </div>
-        <button id="learn-more-close-btn" class="secondary-btn"></button>
+        <button id="learn-more-close-btn" class="secondary-btn" data-i18n="close"></button>
     </div>
   </div>
 
